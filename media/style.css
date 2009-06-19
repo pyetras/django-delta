@@ -1,0 +1,174 @@
+body {
+	color: #5a5a5a;
+	font: 10pt "Lucida Grande", Lucida, Verdana, sans-serif;
+	height: 100%;
+	line-height: 1.4em;
+}
+
+a:link {
+	color: #000;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #e32400 !important;
+	text-decoration: underline !important;
+}
+
+a:visited {
+	color: #000;
+	text-decoration: underline;
+}
+
+body ol li {
+	list-style: decimal;
+	margin-left: 2.5em;
+	list-style-position: outside;
+}
+
+body em {
+	color: #e32400;
+}
+
+ul.menu {
+	float: right;
+	display: block;
+	height: 1em;
+}
+
+ul.menu li {
+	display: block;
+	float: left;
+	margin-right: .5em;
+}
+
+body textarea {
+	margin: 0 auto;
+	width: 100%;
+	display: block;
+	font-family: 'Bitstream Vera Sans Mono', Courier, monospace;
+	margin-bottom: .5em;
+}
+
+pre li{
+	height: 1em;
+	margin-top: -4em;
+}
+
+/* @group head */
+
+div#head {
+	background-color: #343d38;
+	margin: 0px auto;
+	height: 30px;
+	color: #fff;
+	padding: .5em;
+	border-bottom: 2px solid #64766c;
+
+	overflow: hidden;
+}
+
+div#head > a {
+	font-size: 2em;
+	display: block;
+	float: left;
+	line-height: 1.4em;
+	text-decoration: none !important;
+}
+
+div#head a{
+	color: #fff;
+}
+
+div#head ul.menu {
+	margin-top: 1em;
+}
+
+
+
+/* @end */
+
+#content {
+	margin: 1em 0 0 1em;
+}
+
+/* @group .code-box */
+
+.code-box {
+	margin-bottom: 1em;
+	min-width: 45em;
+	width: 80%;
+	background-color: #f4fff4;
+}
+
+div.code-box{
+	float: left;
+}
+
+.code-box .header {
+	background-color: #343d38;
+	color: #eee;
+	padding: 5px;
+	border-right: 2px solid #64766c;
+	overflow: hidden;
+}
+
+.code-box .header a{
+	color: #fff;
+}
+
+.code-box .header h2{
+	float: left;
+	margin-left: 10px;
+}
+
+.code-box .header h2{
+	font-size: 1.2em
+}
+
+.code-box table {
+	width: 100%;
+}
+
+.code-box table pre{
+	line-height: 1.4em;
+	padding: 1em 0.5em;
+	overflow: auto;
+}
+
+.code-box table td.number pre{
+	text-align: right;	
+	background-color: #343d38;
+	color: #fff;
+	border-right: 2px solid #64766c;
+}
+
+.code-box table span{
+	display: block;
+}
+
+/* @end */
+
+div#side-menu{
+	width: 15%;
+	min-width: 10em;
+	float: right;
+	background-color: #f4fff4;
+	margin-right: .5em;
+	margin-top: 1.4em;
+	padding: 0.5em;
+	border-bottom: 2px solid #64766c;
+}
+
+#content > pre {
+	overflow: auto;
+	display: block;
+	width: 99%;
+	max-height: 20em;
+	background-color: #343d38;
+	color: #dfdfdf;
+}
+
+.clear{
+	clear: both;
+}

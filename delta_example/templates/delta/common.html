@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>{% block title %}{% endblock %}Delta</title>
+		<style type="text/css"><!--
+			@import url(/media/reset-min.css);
+			@import url(/media/style.css);
+		-->
+		</style>
+		<script type="text/javascript" src="/media/jquery.min.js"></script>
+		{% block js %}{% endblock %}
+	</head>
+	<body>
+		<div id="head">
+			<a href="{% url vcfile-list %}" title="Delta">Delta</a>
+			<ul class="menu">
+				<li><a href="{% url vcfile-add %}" title="New">New</a></li>
+				<li><a href="/admin/doc" title="Help">Help</a></li>
+			</ul>
+		</div>
+		<div id="content">
+			{% block content %}{% endblock %}	
+		</div>
+	</body>
+</html>
