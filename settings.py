@@ -88,6 +88,5 @@ INSTALLED_APPS = (
 	'django.contrib.admin',
 	'delta',
 	'delta_example',
-	'django_evolution',
 	'debug_toolbar',
 )

@@ -48,14 +48,14 @@ class VCFile(models.Model):
 		count = self.version_count()
 		v = Version(file = self)
 
-		if count % (max_depth*max_degree) == 0 or forceNewTree: #new tree
+		if (count-1) % (max_depth*max_degree) == 0 or forceNewTree: #new tree
 			str1 = ''
 			differs = None
 		else:
-			if count % max_degree == 0: #new key node
+			if (count-1) % max_degree == 0: #new key node
 				which = count - 1
 			else: #new node
-				which = (count/max_degree)*max_degree
+				which = ((count-1)/max_degree)*max_degree
 			differs = self.version_set.order_by('date_commited')[which]
 			str1 = differs.recover().file_unpacked
 		
@@ -153,7 +153,7 @@ class VersionManager(models.Manager):
 			WHERE v.file_id = %s
 			GROUP BY v.id, v.delta, v.date_commited
 			ORDER BY v.date_commited ASC;
-		""", [int(file.pk), int(file.pk)])
+		""", [file.pk, file.pk])
 		versions = {}
 		for row in cursor.fetchall():
 			v = self.model(id = row[0], delta = row[1], date_commited = row[2], file = file)
@@ -183,7 +183,7 @@ class Version(models.Model):
 			
 		self.delta = '\1'.join(delta_list)
 		if self.use_zlib:
-			self.delta = base64.encodestring(self.delta.encode('zlib'))
+			self.delta = base64.encodestring(self.delta.encode('utf-8').encode('zlib'))
 		#self.delta = self.delta.decode('ascii')
 	
 	def save(self):
@@ -196,7 +196,7 @@ class Version(models.Model):
 		if self.delta == '': return []
 		
 		if self.use_zlib:
-			return base64.decodestring(self.delta).decode('zlib').split('\1')
+			return base64.decodestring(self.delta).decode('zlib').decode('utf-8').split('\1')
 		
 		return self.delta.split('\1')
 	
