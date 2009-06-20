@@ -20,15 +20,15 @@ def detail(request, file_id, version_number = 0):
 		
 		try:
 			file.ver(version_number)
-		except (Exception):
+		except Version.DoesNotExist:
 			file.ver(0)
-		finally:
-			file.version.number += 1
-			form.fields['versions'].initial = file.version.number
-			return render_to_response('delta/vcfile_detail.html', {
-				'file': file,
-				'form': form,
-			})
+
+		file.version.number += 1
+		form.fields['versions'].initial = file.version.number
+		return render_to_response('delta/vcfile_detail.html', {
+			'file': file,
+			'form': form,
+		})
 	
 def revert(request, file_id, version_number):
 	file = VCFile.objects.get(id = file_id)

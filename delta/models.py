@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 import base64
+from django.db import connection
 
 class VCFile(models.Model):
 	id = models.AutoField(primary_key = True)
@@ -45,7 +46,7 @@ class VCFile(models.Model):
 		max_depth = getattr(settings, 'MAX_DEPTH', 100)
 
 		count = self.version_count()
-		v = Version(file = self, number = count)
+		v = Version(file = self)
 
 		if count % (max_depth*max_degree) == 0 or forceNewTree: #new tree
 			str1 = ''
@@ -55,7 +56,7 @@ class VCFile(models.Model):
 				which = count - 1
 			else: #new node
 				which = (count/max_degree)*max_degree
-			differs = self.version_set.get(number = which)
+			differs = self.version_set.order_by('date_commited')[which]
 			str1 = differs.recover().file_unpacked
 		
 		if count > 0:
@@ -72,8 +73,9 @@ class VCFile(models.Model):
 		self.count = -1
 
 	def revert(self, number):
-		self.version_set.filter(number__gt = number).delete()
 		v = self.getVersion(number+1)
+		self.version_set.filter(date_commited__gt = v.date_commited).delete()
+		
 		self.head = v.file_unpacked;
 		self.save(commit = False)
 		
@@ -81,22 +83,24 @@ class VCFile(models.Model):
 
 	def getVersion(self, number=1):
 		count = self.version_count()
-
+		
 		if number == 0:
-			v = self.version_set.get(number = count-1)
+			v = self.version_set.order_by('date_commited')[count-1]
 			v.file_unpacked = self.head
+			v.number = count - 1
 			return v
 
 		if number < 0:
 			number += count
 
 		number -= 1
-		
-		return self.version_set.get(number=number).recover()
+		v = self.version_set.select_related('differs').order_by('date_commited')[number].recover()
+		v.number = number 
+		return v
 	
 	def listVersions(self):
 		versions = ['']
-		for i, v in enumerate(self.version_set.order_by('date_commited')):
+		for i, v in enumerate(Version.objects.get_with_number(self)):
 			versions.append(v.applyDelta(versions[v.differs and v.differs.number+1 or 0]))
 			yield v
 	
@@ -139,28 +143,31 @@ class VCFile(models.Model):
 		ordering = ('-id',)
 	
 class VersionManager(models.Manager):
-	from django.db import connection
-	
+	use_for_related_fields = True
 	def get_with_number(self, file):
 		cursor = connection.cursor()
 		cursor.execute("""
-			SELECT v.id, v.delta, v.date_commited, COUNT(other.id) AS number
+			SELECT v.id, v.delta, v.date_commited, COUNT(other.id) AS number, v.differs_id
 			FROM delta_version v LEFT OUTER JOIN delta_version other ON 
-			other.file_id = %(file_id)d AND other.date_commited < v.date_commited
-			WHERE v.file_id = %(file_id)d
+			other.file_id = %s AND other.date_commited < v.date_commited
+			WHERE v.file_id = %s
 			GROUP BY v.id, v.delta, v.date_commited
-			ORDER BY v.date_commited DESC;
-		""", {'file_id': file.id})
+			ORDER BY v.date_commited ASC;
+		""", [int(file.pk), int(file.pk)])
+		versions = {}
 		for row in cursor.fetchall():
 			v = self.model(id = row[0], delta = row[1], date_commited = row[2], file = file)
 			v.number = row[3]
+			versions[v.id] = v
+			if row[4]:
+				v.differs = versions[int(row[4])]
 			yield v
 		
 class Version(models.Model):
 	use_zlib = getattr(settings, 'USE_ZLIB', False)
 	
 	id = models.AutoField(primary_key = True)
-	number = models.IntegerField(editable = False)
+	number = None
 	delta = models.TextField(editable = False)
 	#can be upgraded with http://www.djangosnippets.org/snippets/1495/
 	differs = models.ForeignKey('Version', null = True)

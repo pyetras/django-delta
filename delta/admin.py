@@ -11,7 +11,7 @@ admin.site.register(VCFile, VCFileAdmin)
 
 class VersionAdmin(admin.ModelAdmin):
 	list_display = ('__unicode__', 'delta_short', 
-	'date_commited', 'number')
+	'date_commited')
 	date_hierarchy = 'date_commited'
 	
 	def delta_short(self, obj):
