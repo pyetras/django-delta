@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from delta.models import *
 from django.http import HttpResponse, HttpResponseRedirect
 from django import forms
@@ -12,7 +12,7 @@ def detail(request, file_id, version_number = 0):
 		pass
 	else:
 		version_number = (version_number != '' or version_number == None) and int(version_number) or 0
-		file = VCFile.objects.get(id = file_id)
+		file = get_object_or_404(DeltaText, id = file_id)
 		
 		form = VersionsForm()
 		tab = [(i, i) for i in range(1, file.version_count()+1)]
@@ -25,13 +25,19 @@ def detail(request, file_id, version_number = 0):
 
 		file.version.number += 1
 		form.fields['versions'].initial = file.version.number
-		return render_to_response('delta/vcfile_detail.html', {
+		return render_to_response('delta/deltatext_detail.html', {
 			'file': file,
 			'form': form,
 		})
 	
 def revert(request, file_id, version_number):
-	file = VCFile.objects.get(id = file_id)
-	file.revert(int(version_number)-1)
+	file = get_object_or_404(DeltaText, id = file_id)
+	file.revert(int(version_number))
 	return HttpResponseRedirect(reverse(detail, args=(file_id,)))
+	
+def restore(request, file_id, version_number):
+	file = get_object_or_404(DeltaText, id = file_id)
+	file.restore(int(version_number))
+	return HttpResponseRedirect(reverse(detail, args=(file_id,)))
+
 	

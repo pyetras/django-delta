@@ -1,13 +1,13 @@
 from delta.models import *
 from django.contrib import admin
 
-class VCFileAdmin(admin.ModelAdmin):
+class DeltaTextAdmin(admin.ModelAdmin):
 	list_display = ('head_short', 'version_count', 'last_edit', 'date_created')
 	def head_short(self, obj):
 		return obj.head[:100] + (len(obj.head)>100)*'...'
 	head_short.short_description = 'Head'
 		
-admin.site.register(VCFile, VCFileAdmin)
+admin.site.register(DeltaText, DeltaTextAdmin)
 
 class VersionAdmin(admin.ModelAdmin):
 	list_display = ('__unicode__', 'delta_short', 
