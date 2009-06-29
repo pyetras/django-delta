@@ -161,7 +161,7 @@ class DeltaText(models.Model):
 		"""
 		try:
 			return self.version.file_unpacked
-		except Exception:
+		except AttributeError:
 			return self.head
 			
 	def rtext_list(self):
